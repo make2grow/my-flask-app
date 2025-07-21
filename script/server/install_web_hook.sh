@@ -5,39 +5,7 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-create_deploy_sh() {
-    # Use current user's home directory instead of hardcoded path
-    local deploy_file="$HOME/deploy.sh"
-    local force_create="$1"
-    
-    # Create home directory if it doesn't exist
-    mkdir -p "$HOME"
-    
-    # Check if file exists and force flag is not set
-    if [ -f "$deploy_file" ] && [ "$force_create" != "--force" ]; then
-        echo "Deploy script already exists at $deploy_file"
-        echo "Use 'create_deploy_sh --force' to overwrite existing file."
-        return 1
-    fi
-    
-    # Create the deployment script
-    cat > "$deploy_file" << EOF
-cd /home/deploy/my-flask-app
-git pull origin main
-docker build -t flask-app .
-docker stop flask-running
-docker rm flask-running
-docker run -d --name flask-running -p 80:5000 flask-app
-EOF
-    
-    chmod +x "$deploy_file"
-    
-    if [ "$force_create" = "--force" ]; then
-        echo "Deploy script overwritten at $deploy_file"
-    else
-        echo "Deploy script created successfully at $deploy_file"
-    fi
-}
+DEPLOY_FILE="$HOME/my-flask-app/script/server/deploy.sh"
 
 create_hooks_json() {
     # Use current user's home directory instead of hardcoded path
@@ -59,7 +27,7 @@ create_hooks_json() {
 [
   {
     "id": "flask-hook",
-    "execute-command": "/home/deploy/deploy.sh",
+    "execute-command": "$DEPLOY_FILE",
     "command-working-directory": "/home/deploy/my-flask-app"
   }
 ]
@@ -464,7 +432,6 @@ show_webhook_startup_status() {
 main() {
     echo -e "${GREEN}WebHook Setup${NC}"
     
-    create_deploy_sh
     create_hooks_json
     install_webhook
     
