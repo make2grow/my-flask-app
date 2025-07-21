@@ -9,7 +9,7 @@ echo "[$DATE] Deployment started" >> $LOG_FILE
 #  current directory
 pwd >> $LOG_FILE
 
-# git pull 실행
+# git pull
 git pull origin main >> $LOG_FILE 2>&1
 
 echo "[$DATE] Deployment completed" >> $LOG_FILE
