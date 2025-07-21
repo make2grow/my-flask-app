@@ -2,6 +2,6 @@
   {
     "id": "flask-hook",
     "execute-command": "/home/deploy/deploy.sh",
-    "command-working-directory": "/home/user/my-flask-app"
+    "command-working-directory": "/home/deploy/my-flask-app"
   }
 ]
