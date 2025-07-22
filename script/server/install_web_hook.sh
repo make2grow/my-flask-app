@@ -299,7 +299,7 @@ EOF
     echo "🔄 To start local service now:"
     echo "   sudo rc-service local start"
     echo ""
-    echo "⚠️  Make sure hooks.json exists in $app_dir before starting!"
+    echo "⚠️  Make sure hooks.json exists in $hooks_json before starting!"
 }
 
 # Helper function to remove webhook startup
