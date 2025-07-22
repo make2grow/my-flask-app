@@ -1,19 +1,32 @@
 #!/bin/bash
 
-# logfile
 LOG_FILE="/home/deploy/deploy.log"
 DATE=$(date '+%Y-%m-%d:%H:%M:%S')
 
-echo "[$DATE] Deployment started" >> $LOG_FILE
+log() {
+  echo "[$DATE] $1" | tee -a "$LOG_FILE"
+}
 
-#  current directory
-pwd >> $LOG_FILE
+run() {
+  eval "$1" >>"$LOG_FILE" 2>&1
+  if [ $? -eq 0 ]; then
+    log "✓ $2 OK"
+  else
+    log "✗ $2 FAILED"
+    exit 1
+  fi
+}
 
-echo "[$DATE] Deployment completed" >> $LOG_FILE
+log "Deployment started"
+cd /home/deploy/my-flask-app || { log "✗ Failed to change directory"; exit 1; }
 
-cd /home/deploy/my-flask-app
-git pull origin main >> $LOG_FILE 2>&1
-docker build -t flask-app .
-docker stop flask-running
-docker rm flask-running
-docker run -d --name flask-running -p 80:5000 flask-app
+run "git pull origin main" "Git pull"
+
+run "docker build -t flask-app ." "Docker build"
+
+run "docker stop flask-running || true" "Stop existing container"
+run "docker rm flask-running || true" "Remove existing container"
+
+run "docker run -d --name flask-running -p 80:5000 flask-app" "Run container"
+
+log "Deployment completed"

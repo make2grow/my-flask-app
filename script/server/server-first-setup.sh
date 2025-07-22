@@ -553,6 +553,11 @@ show_webhook_startup_status() {
     fi
 }
 
+set_time_zone() {
+    if setup-timezone -z America/New_York; then
+        echo "Set time zone to New York"
+    fi
+}
 
 # Main execution
 main() {
@@ -574,6 +579,7 @@ main() {
     add_rc-updates
     setup_webhook_startup
     show_webhook_startup_status
+    set_time_zone
     
     echo -e "${GREEN}=== Setup completed successfully! ===${NC}"
     echo ""
