@@ -162,7 +162,7 @@ start_webhook() {
     
     # Start webhook
     echo "▶️  Launching webhook..."
-    webhook -hooks "$hooks_json" -port "$port" -verbose > /home/deploy/webhook.log 2>&1 &
+    webhook -hooks "$hooks_json" -port "$port" -verbose -hotreload > /home/deploy/webhook.log 2>&1 &
     local webhook_pid=$!
     
     sleep 1

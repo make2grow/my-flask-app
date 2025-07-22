@@ -2,6 +2,14 @@
   {
     "id": "flask-hook",
     "execute-command": "/home/deploy/my-flask-app/script/server/deploy.sh",
-    "command-working-directory": "/home/deploy/my-flask-app"
+    "command-working-directory": "/home/deploy/my-flask-app",
+    "response-message": "Deployment triggered successfully!",
+    "pass-arguments-to-command": [
+      {
+        "source": "payload",
+        "name": "head_commit.message"
+      }
+    ]
   }
 ]
+
