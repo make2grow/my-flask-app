@@ -28,3 +28,15 @@ git branch --set-upstream-to=origin/main
 From local
 
 ```bash
+sh script/git/push_code.sh  
+
+or
+
+sh script/git/push_code.sh  "YOUR COMMIT COMMENT"
+```
+
+From server
+
+```bash
+git pull origin main
+```
