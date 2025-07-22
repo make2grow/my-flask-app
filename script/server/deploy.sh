@@ -1,6 +1,8 @@
 #!/bin/bash
 LOG_FILE="/home/deploy/deploy.log"
 DATE=$(date '+%Y-%m-%d:%H:%M:%S')
+export HOME="/root"  # or use /home/deploy
+export USER="root"
 
 log() {
   echo "[$DATE] $1" | tee -a "$LOG_FILE"
