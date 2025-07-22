@@ -230,8 +230,8 @@ status_webhook() {
     fi
     
     echo ""
-    echo "Hooks file: /home/deploy/hooks.json"
-    if [ -f "/home/deploy/hooks.json" ]; then
+    echo "Hooks file: $hooks_json"
+    if [ -f "$hooks_json" ]; then
         echo "  Status: ✅ EXISTS"
     else
         echo "  Status: ❌ NOT FOUND"
