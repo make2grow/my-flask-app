@@ -38,5 +38,29 @@ sh script/git/push_code.sh  "YOUR COMMIT COMMENT"
 From server
 
 ```bash
-git pull origin main
+git pull
 ```
+
+Then rebuild the docker: use docker-run.sh
+
+```bash
+docker build -t flask-app .
+docker run -d -p 80:5000 flask-app
+```
+
+Check docker is running OK
+```bash
+> docker ps
+CONTAINER ID   IMAGE       COMMAND                  CREATED          STATUS          PORTS                                     NAMES
+800891227c0d   flask-app   "flask run --host=0.…"   50 seconds ago   Up 49 seconds   
+```
+
+Check if you can access the web server.
+
+```bash
+curl -v http://localhost:80
+```
+
+# Automation using WebHook
+
+From server
