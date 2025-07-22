@@ -35,7 +35,7 @@ git status >> "$LOG_FILE" 2>&1
 
 log "Git remote check:"
 git remote -v >> "$LOG_FILE" 2>&1
-
+run "git config --global --add safe.directory /home/deploy/my-flask-app" "Git safe directory config"
 run "git pull origin main" "Git pull"
 # ... rest of your script
 
