@@ -6,7 +6,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 app_dir="/home/deploy/my-flask-app"  # Using actual deploy user
-hooks_dir="$app_dir/script/serve"
+hooks_dir="$app_dir/script/server"
 hooks_json="$hooks_dir/hooks.json"
 
 install_webhook() {
