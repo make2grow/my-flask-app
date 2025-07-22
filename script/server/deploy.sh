@@ -27,6 +27,6 @@ run "docker build -t flask-app ." "Docker build"
 run "docker stop flask-running || true" "Stop existing container"
 run "docker rm flask-running || true" "Remove existing container"
 
-run "docker run -d --name flask-running -p 80:5000 flask-app" "Run container"
+run "docker run -d --name flask-running --restart always -p 80:5000 flask-app" "Run container"
 
 log "Deployment completed"
