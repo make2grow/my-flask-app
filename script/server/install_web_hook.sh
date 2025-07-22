@@ -128,51 +128,63 @@ start_webhook() {
     
     # Check if hooks configuration file exists
     if [ ! -f "$hooks_json" ]; then
-        echo "❌ Error: hooks configuration file not found at $hooks_file"
+        echo "❌ Error: hooks configuration file not found at $hooks_json"
         return 1
     fi
     
-    # Check if webhook is already running
-    if pgrep -f "webhook.*hooks.*$hooks_json" >/dev/null 2>&1; then
-        echo "✅ Webhook is already running"
-        echo "Process info:"
-        pgrep -f "webhook.*hooks.*$hooks_json" | while read pid; do
-            echo "  PID: $pid"
-            ps -p "$pid" -o pid,ppid,cmd --no-headers 2>/dev/null || echo "  Process details unavailable"
+    echo "🔍 Checking current webhook status..."
+    
+    # status_webhook 
+    if pgrep -f "webhook.*hooks" >/dev/null 2>&1; then
+        echo "📊 Current webhook status:"
+        echo "  Status: 🟡 RUNNING (will be restarted)"
+        
+        pgrep -f "webhook.*hooks" | while read pid; do
+            echo "  Current PID: $pid"
         done
-        return 0
+        
+        echo ""
+        echo "🔄 Restarting webhook service..."
+        stop_webhook  # 기존 함수 활용
+        echo ""
+    else
+        echo "📊 Current status: ⚫ NOT RUNNING"
+        echo "🚀 Starting fresh webhook instance..."
     fi
     
-    # Check if port is already in use
+    # Double-check port availability
     if command -v netstat >/dev/null 2>&1; then
         if netstat -ln 2>/dev/null | grep ":$port " >/dev/null; then
-            echo "❌ Error: Port $port is already in use"
-            echo "Processes using port $port:"
-            netstat -lnp 2>/dev/null | grep ":$port " || echo "  Unable to determine process"
+            echo "❌ Error: Port $port is still in use"
             return 1
         fi
     fi
     
-    # Start webhook in background
-    echo "🚀 Starting webhook..."
-    echo "Command: webhook -hooks $hooks_json -port $port"
-    
-    # Start webhook in background and capture PID
+    # Start webhook
+    echo "▶️  Launching webhook..."
     webhook -hooks "$hooks_json" -port "$port" >/dev/null 2>&1 &
     local webhook_pid=$!
     
-    sleep 1  # Give it a moment to start
+    sleep 1
     
-    # Verify it started successfully
+    # Verify startup
     if kill -0 "$webhook_pid" 2>/dev/null; then
         echo "✅ Webhook started successfully!"
-        echo "  PID: $webhook_pid"
-        echo "  Port: $port"
-        echo "  Hooks file: $hooks_json"
-        echo "  Status: Running"
+        echo "  🆔 PID: $webhook_pid"
+        echo "  🔌 Port: $port"
+        echo "  📁 Config: $hooks_json"
         
-        # Save PID for later management (optional)
+        # Save PID and show final status
         echo "$webhook_pid" > /tmp/webhook.pid
+        
+        echo ""
+        echo "📊 Final status verification:"
+        # status_webhook check again
+        if pgrep -f "webhook.*hooks" >/dev/null 2>&1; then
+            echo "  Status: ✅ CONFIRMED RUNNING"
+        else
+            echo "  Status: ❌ STATUS CHECK FAILED"
+        fi
     else
         echo "❌ Webhook failed to start"
         return 1
@@ -201,40 +213,6 @@ stop_webhook() {
         rm -f /tmp/webhook.pid
     else
         echo "ℹ️  Webhook is not running"
-    fi
-}
-
-status_webhook() {
-    echo "📊 Webhook Status Check"
-    echo "===================="
-    
-    if pgrep -f "webhook.*hooks" >/dev/null 2>&1; then
-        echo "Status: ✅ RUNNING"
-        echo ""
-        echo "Process details:"
-        pgrep -f "webhook.*hooks" | while read pid; do
-            echo "  PID: $pid"
-            if command -v ps >/dev/null 2>&1; then
-                ps -p "$pid" -o pid,ppid,etime,cmd --no-headers 2>/dev/null | sed 's/^/    /'
-            fi
-        done
-        
-        # Check port if netstat is available
-        if command -v netstat >/dev/null 2>&1; then
-            echo ""
-            echo "Port usage:"
-            netstat -ln 2>/dev/null | grep ":9000 " | sed 's/^/  /' || echo "  Port info unavailable"
-        fi
-    else
-        echo "Status: ❌ NOT RUNNING"
-    fi
-    
-    echo ""
-    echo "Hooks file: $hooks_json"
-    if [ -f "$hooks_json" ]; then
-        echo "  Status: ✅ EXISTS"
-    else
-        echo "  Status: ❌ NOT FOUND"
     fi
 }
 
@@ -407,7 +385,6 @@ main() {
     install_webhook
     
     start_webhook
-    status_webhook
     
     setup_webhook_startup
     show_webhook_startup_status
