@@ -235,15 +235,6 @@ setup_webhook_startup() {
         return 1
     fi
     
-    # Check if file already exists and force flag is not set
-    if [ -f "$startup_file" ] && [ "$force_create" != "--force" ]; then
-        echo "ℹ️  Startup script already exists at $startup_file"
-        echo "   Use 'setup_webhook_startup --force' to overwrite."
-        echo "   Current content:"
-        cat "$startup_file" | sed 's/^/     /'
-        return 1
-    fi
-    
     # Create /etc/local.d directory if it doesn't exist
     if [ ! -d "/etc/local.d" ]; then
         echo "📁 Creating /etc/local.d directory..."
